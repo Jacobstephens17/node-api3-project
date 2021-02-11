@@ -84,7 +84,7 @@ router.get('/:id/posts',mw.validateUserId, (req, res) => {
     if(post.length > 0 ){
       res.status(200).json(post)
     }else{
-      res.status(404).json({message:`Post with specified ID: ${id} does note exist`})
+      res.status(404).json({message:`Post with specified ID: ${id} does not exist`})
     }
   })
   .catch( 
@@ -95,9 +95,18 @@ router.get('/:id/posts',mw.validateUserId, (req, res) => {
 
 
 router.post('/:id/posts', mw.validateUserId,(req, res) => {
-  // RETURN THE NEWLY CREATED USER POST
-  // this needs a middleware to verify user id
-  // and another middleware to check that the request body is valid
+  const id = req.params.id
+  Users.getUserPosts(id)
+    .then((post) => {
+      if(post.length > 0 || !post.id){
+        res.status(200).json(post)
+      }else{
+        res.status(400).json({message:`Please add correct data`})
+      }
+    })
+    .catch(
+      res.status(500).json({message: 'Could not post'})
+    )
 });
 
 // do not forget to export the router
