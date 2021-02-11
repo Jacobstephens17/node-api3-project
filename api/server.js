@@ -7,19 +7,16 @@ const mw = require('./middleware/middleware')
 
 
 // remember express by default cannot parse JSON in request bodies
-
-server.use(morgan('dev'));
+server.use(morgan('dev'))
 server.use(express.json())
 
 // global middlewares and routes need to be connected here
-
-
-server.use('/api/posts/posts-router', postsRouter)
-server.use('/api/users/user-router', userRouter)
-server.use(mw.logger('testing'))
+server.use('/api/posts', postsRouter)
+server.use('/api/users', userRouter)
+server.use(mw.logger('Token'))
 
 server.get('/', (req, res) => {
-  res.send(`<h2>Let's write some middleware!</h2>`);
+  res.send(`<h2>Let's write some middleware!</h2>`)
 });
 
 

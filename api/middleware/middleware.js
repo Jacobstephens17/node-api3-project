@@ -1,10 +1,12 @@
 const Posts = require('../posts/posts-model')
 
+const Users = require('../users/users-model')
+
 
 
 const logger = (token) => (req, res, next) => {
-  if(token === 'testing'){
-    console.log(`Token: ${token} has been collected!`)
+  if(token === 'Token'){
+      console.log(`Request Date: [${new Date()}] Method: ${req.method} to ${req.url} URL`)
     next()
   }else{
     res.json('Not a valid token')
@@ -13,31 +15,32 @@ const logger = (token) => (req, res, next) => {
 
 
 
-const validateUserId =  (req, res, next) => {
+const validateUserId = async (req, res, next) => {
   const {id} = req.params
   try{
-    const hub = Posts.getById(id)
-    if(!hub){
-      res.status(400).json({message: `Username with ID: ${id} could not be found`})
+    const user = await Users.getById(id)
+    if(!user){
+      res.status(400).json({message: `Post: ${id} could not be found`})
     }else{
-      req.hub = hub
+      req.user = user
       next()
     }
-      }catch(err){
-        res.status(500).json({message: `Server error: ${err}`})
-    }
+  }catch(err){
+    res.status(500).json({message:`Server error: ${err}`})
   }
+
+}
 
 
 
 const  validateUser = (req, res, next) => {
-  const {user} = req
+  const {user} = req.params
   try{
-    const hub = Posts.getById(user)
+    const hub = User.get(user)
     if(!hub){
       res.status(400).json({message: `User: ${user} could not be found`})
     }else{
-      req.hub = hub
+      req.user = user
       next()
     }
   }catch(err){
@@ -49,15 +52,41 @@ const  validateUser = (req, res, next) => {
 
 
 
-const validatePost = (req, res, next) => {
-
-
+const validatePost = async (req, res, next) => {
+  const { post } = req.params
+  try{
+    const posts = await Posts.get(post)
+    if(!posts){
+      res.status(400).json({message: `Post: ${post} could not be found`})
+    }else{
+      req.posts = posts
+      next()
+    }
+  }catch(err){
+    res.status(500).json({message: `Server error: ${err}`})
+  }
 }
 
+const validatePostId = async (req, res, next) => {
+  const {id} = req.params
+  try{
+    const post = await Posts.getById(id)
+    if(!post){
+      res.status(400).json({message: `Post: ${id} could not be found`})
+    }else{
+      req.post = post
+      next()
+    }
+  }catch(err){
+    res.status(500).json({message:`Server error: ${err}`})
+  }
+
+}
 // do not forget to expose these functions to other modules
 module.exports = {
   logger, 
   validateUserId,
   validateUser,
-  validatePost
+  validatePost,
+  validatePostId
 }

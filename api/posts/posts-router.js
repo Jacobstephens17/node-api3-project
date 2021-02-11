@@ -5,10 +5,9 @@ const mw = require('../middleware/middleware')
 
 
 router.get('/', (req, res) => {
-  // RETURN AN ARRAY WITH ALL THE POSTS
-  Posts.get(req.query)
-  .then((hubs) => {
-    res.status(200).json(hubs)
+  Posts.get(req.body)
+  .then((posts) => {
+    res.status(200).json(posts)
   })
   .catch((err) => {
     res.status(500).json({
@@ -17,13 +16,10 @@ router.get('/', (req, res) => {
   })
 });
 
-router.get('/:id', mw.validateUserId, (req, res) => {
-  // RETURN THE POST OBJECT
-  // this needs a middleware to verify post id
-  res.status(200).json(req.hub)
+
+router.get('/:id', mw.validatePostId, (req, res) => {
+  res.status(200).json(req.post)
 });
-
-
 
 
 // do not forget to export the router
